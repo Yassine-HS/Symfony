@@ -1,0 +1,192 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Allusers;
+use App\Entity\Produits;
+use App\Entity\Panier;
+use App\Form\ProduitsType;
+use App\Repository\AllusersRepository;
+use App\Repository\ProduitsRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
+use DateTime;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+
+
+#[Route('/produits')]
+class ProduitsController extends AbstractController
+{
+    #[Route('/', name: 'app_produits_index', methods: ['GET'])]
+    public function index(SessionInterface $session,AllusersRepository $allusersRepository, Request $request, PaginatorInterface $paginator, ProduitsRepository $produitsRepository): Response
+    {
+        $userId = $session->get('user_id');
+        if ($userId!=null) {
+            $user = $allusersRepository->find($userId);
+        }
+        $idpanier = $user->getPaniers()->first()->getidpanier();
+        $produits = $produitsRepository->findAll();
+
+        $produits = $paginator->paginate(
+            $produits,
+            $request->query->getInt('page', 1),
+            2
+        );
+
+        return $this->render('produits/index.html.twig', [
+            'produits' => $produits,
+            'idpanier' => $idpanier,
+            'user' => $user,
+        ]);
+    }
+
+
+    #[Route('/new', name: 'app_produits_new', methods: ['GET', 'POST'])]
+    public function new(SessionInterface $session,AllusersRepository $allusersRepository, Request $request, ProduitsRepository $produitsRepository): Response
+    {
+        $userId = $session->get('user_id');
+        if ($userId!=null) {
+            $user = $allusersRepository->find($userId);
+        }
+        $currentDate = new DateTime();
+        $produit = new Produits();
+        $produit->setDateajout(new \DateTime());
+        $produit->setIdUser($user);
+        $form = $this->createForm(ProduitsType::class, $produit);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $image */
+            $image = $form->get('image')->getData();
+
+            if ($image) {
+                $originalFilename = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = $originalFilename . '-' . uniqid() . '.' . $image->guessExtension();
+
+                try {
+                    $image->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // handle exception
+                    @file_put_contents($this->getParameter('kernel.project_dir').'/var/log/dev.log', "[produits_new] Image move failed: ".$e->getMessage()."\n", FILE_APPEND);
+                }
+
+                $produit->setImage($newFilename);
+            } else {
+                $produit->setImage('default.png');
+            }
+            // ensure category is set
+            if (!$produit->getIdcategorie()) {
+                $this->addFlash('error', 'Please select a category for the product.');
+                return $this->redirectToRoute('app_produits_new', [], Response::HTTP_SEE_OTHER);
+            }
+            try {
+                $produitsRepository->save($produit, true);
+            } catch (\Exception $e) {
+                @file_put_contents($this->getParameter('kernel.project_dir').'/var/log/dev.log', "[produits_new] Save failed: ".$e->getMessage()."\n", FILE_APPEND);
+                $this->addFlash('error', 'Unable to save product: '.$e->getMessage());
+                return $this->redirectToRoute('app_produits_new', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->redirectToRoute('app_produits_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('produits/new.html.twig', [
+            'produit' => $produit,
+            'form' => $form,
+            'user'=>$user,
+        ]);
+    }
+
+    #[Route('/{idproduit}', name: 'app_produits_show', methods: ['GET'], requirements: ['idproduit' => '\\d+'])]
+    public function show(SessionInterface $session,AllusersRepository $allusersRepository, Request $request, Produits $produit, ProduitsRepository $produitsRepository): Response
+    {
+        $userId = $session->get('user_id');
+        if ($userId!=null) {
+            $user = $allusersRepository->find($userId);
+        }
+        $idpanier = $user->getPaniers()->first()->getidpanier();
+
+        return $this->render('produits/show.html.twig', [
+            'produits' => $produitsRepository->findAll(),
+            'produit' => $produit,
+            'idpanier' => $idpanier,
+            'user'=>$user,
+
+        ]);
+    }
+
+    #[Route('/{idproduit}/edit', name: 'app_produits_edit', methods: ['GET', 'POST'], requirements: ['idproduit' => '\\d+'])]
+    public function edit(SessionInterface $session,AllusersRepository $allusersRepository, Request $request, Produits $produit, ProduitsRepository $produitsRepository): Response
+    {
+        $user=new Allusers();
+        if ($userId = $session->get('user_id') != null) {
+            $user = $allusersRepository->find($userId);
+        }
+        $idpanier = $user->getPaniers()->first()->getidpanier();
+        // Définir l'utilisateur actuel comme propriétaire du produit
+        $produit->setIdUser($user);
+        $form = $this->createForm(ProduitsType::class, $produit);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $image = $form->get('image')->getData();
+
+            if ($image) {
+                $originalFilename = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = $originalFilename . '-' . uniqid() . '.' . $image->guessExtension();
+
+                try {
+                    $image->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // handle exception
+                }
+                $produit->setImage($newFilename);
+            }
+
+            $produitsRepository->save($produit, true);
+
+            return $this->redirectToRoute('app_produits_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('produits/edit.html.twig', [
+            'produit' => $produit,
+            'form' => $form,
+            'idpanier' => $idpanier,
+            'user'=>$user,
+        ]);
+    }
+
+    #[Route('/{idproduit}', name: 'app_produits_delete', methods: ['POST'], requirements: ['idproduit' => '\\d+'])]
+    public function delete(AllusersRepository $allusersRepository, Request $request, Produits $produit, ProduitsRepository $produitsRepository): Response
+    {
+        $userId = $request->getSession()->get('user_id');
+        $user = $allusersRepository->find($userId);
+        $produit->setIdUser($user);
+        // Vérifier si l'utilisateur est le propriétaire du produit
+        if ($produit->getIdUser() !== $user) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à supprimer ce produit.');
+        }
+
+        if ($this->isCsrfTokenValid('deleteproduitFront' . $produit->getIdproduit(), $request->request->get('_token'))) {
+            $produitsRepository->remove($produit, true);
+        }
+
+        return $this->redirectToRoute('app_produits_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+
+}

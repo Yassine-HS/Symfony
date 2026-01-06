@@ -1,0 +1,211 @@
+{% block head %}
+    <link href="{{ asset('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap') }}"
+          rel="stylesheet">
+    {% block stylesheet %}
+        <link href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+
+        <!-- Additional CSS Files -->
+        <link rel="stylesheet" href="{{ asset('assets/css/fontawesome.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/templatemo-liberty-market.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/owl.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/animate.css') }}">
+        <link rel="stylesheet" href="{{ asset('https://unpkg.com/swiper@7/swiper-bundle.min.css') }}"/>
+    {% endblock %}
+{% endblock %}
+
+
+
+
+{% block body %}
+
+
+    {% block header %}
+
+
+        <header class="header-area header-sticky">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <nav class="main-nav">
+                            <!-- ***** Logo Start ***** -->
+                            <a href="index.html" class="logo">
+                                <img src="{{ asset('assets/images/logo.png') }}" alt="">
+                            </a>
+                            <!-- ***** Logo End ***** -->
+                            <!-- ***** Menu Start ***** -->
+                            <ul class="nav">
+                                <div class="dropdown">
+                                    <li><a>Art</a></li>
+                                    <div class="dropdown-content">
+                                        <li><a href="{{ path('app_explore') }}">Explore</a></li>
+                                        <li><a href="{{ path('app_blog') }}">Blog</a></li>
+                                        <li><a href="{{ path('app_map') }}">Studios</a></li>
+                                        <li><a href="{{ path('app_post_new') }}">Create Yours</a></li>
+
+                                    </div>
+                                </div>
+                                {% if(user.type=='Studio') %}
+                                    <li><a href="{{ path('app_offretravail_index') }}">Offres</a></li>
+                                {% elseif(user.type=='Artist') %}
+
+                                    <li><a href="{{ path('app_demandetravail_index') }}">Demandes</a></li>
+                                {% endif %}
+                                <li><a href="{{ path('app_produits_index') }}">Shop</a></li>
+                                <li><a href="{{ path('app_panier_show' , {'idpanier': '1'}) }}">Panier</a></li>
+                                <li><a href="{{ path('app_challenge_index') }}">Challenges</a></li>
+                                <li><a href="{{ path('app_tutoriel_index') }}">Tutoriels</a></li>
+                                {%if(user.type!='Observer') %}
+                                    <li><a href="{{ path('app_dashboard_studiodashboard') }}">dashboard </a></li>
+                                {% endif %}
+                                {% if(user.idUser==null) %}
+                                    <li><a href="{{ path('app_allusers_login') }}">Log In</a></li>
+                                {% else %}
+                                    <li><a href="{{ path('app_allusers_logout') }}">Logout</a></li>
+                                {% endif %}
+                            </ul>
+                            <a class='menu-trigger'>
+                                <span>Menu</span>
+                            </a>
+                            <!-- ***** Menu End ***** -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ***** Header Area End ***** -->
+        <style>
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .dropbtn {
+
+                padding: 12px;
+                font-size: 16px;
+                border: none;
+                cursor: pointer;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                z-index: 1;
+            }
+
+            .dropdown-submenu {
+                position: relative;
+            }
+
+            .dropdown-submenu:hover .dropdown-submenu-content {
+                display: block;
+            }
+
+            .dropdown-submenu-content {
+                display: none;
+                position: absolute;
+                left: 100%;
+                top: 0;
+                margin-top: -1px;
+            }
+
+            .dropdown-content a {
+
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+            .dropdown-content a:hover {
+
+            }
+
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
+            .dropdown:hover .dropbtn {
+
+            }
+        </style>
+
+    {% endblock %}
+
+
+    <div class="item-details-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-heading">
+                        <div class="line-dec"></div>
+                        <h2>Create <em>new</em> Post</h2>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+
+                    <div class="row">
+
+
+                        <h1>Create new Post</h1>
+                        <!-- Header Section End -->
+                        {% for message in app.flashes('succes') %}
+                            <div class="alert alert-success" id="flash-message-succes">
+                                {{ message }}
+                            </div>
+                            <script>
+                            <script>
+                                setTimeout(function () {
+                                    $('#flash-message-succes').fadeOut("slow", function () {
+                                    });
+                                }, 1000);
+                            </script>
+                        {% endfor %}
+
+                        {{ include('post/_form.html.twig') }}
+                        <div class="g-recaptcha" data-sitekey="6Ld8YeAlAAAAAPc-kJ8ePKrv71eupZ3trCvsd8no" data-callback="submitForm"></div>
+
+
+                        <a href="{{ path('app_post_index') }}">back to list</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    {% block footer %}
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>Copyright © 2022 <a href="#">Liberty</a> NFT Marketplace Co., Ltd. All rights reserved.
+                            &nbsp;&nbsp;
+                            Designed by <a title="HTML CSS Templates" rel="sponsored" href="https://templatemo.com"
+                                           target="_blank">TemplateMo</a></p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
+    {% block javascripts %}
+
+
+        <script src="https://www.google.com/recaptcha/api.js"></script>
+        <script>
+            grecaptcha.ready(function() {
+                document.getElementById('save-btn').disabled = true;
+
+            });
+
+            function submitForm() {
+            document.getElementById('save-btn').disabled = false;
+
+            }
+
+
+        </script>
+
+
+    {% endblock %}
+{% endblock %}

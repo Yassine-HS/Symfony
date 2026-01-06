@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Login 10</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="{{ asset('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap') }}" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ asset('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/styleL.css') }}">
+
+</head>
+<body class="img js-fullheight" style="background-image: url({{ asset('assets/images/banner-bg.jpg') }});">
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">Login #10</h2>
+            </div>
+        </div>
+<style>.color{color:red;}</style>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="login-wrap p-0">
+                    <h3 class="mb-4 text-center">Have an account?</h3>
+                    {{ form_start(form,{'attr':{'class':'signin-form','novalidate': 'novalidate'}}) }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_widget(form.password,{'attr':{'class':'form-control','placeholder':'Password'}}) }}
+                                <div class="color"> {{ form_errors(form.password) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.name,{'attr':{'class':'form-control','placeholder':'Name'}}) }}
+                                <div class="color"> {{ form_errors(form.name) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.Email,{'attr':{'class':'form-control','placeholder':'Email'}}) }}
+                                <div class="color">  {{ form_errors(form.Email) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.Last_Name,{'attr':{'class':'form-control','placeholder':'Last Name'}}) }}
+                                <div class="color">  {{ form_errors(form.Last_Name) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.description,{'attr':{'class':'form-control','placeholder':'Description'}}) }}
+                                <div class="color">  {{ form_errors(form.description) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.bio,{'attr':{'class':'form-control','placeholder':'BIO'}}) }}
+                                <div class="color">  {{ form_errors(form.bio) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_widget(form.Birthday,{'attr':{'class':'form-control'}}) }}
+                                <div class="color">  {{ form_errors(form.Birthday) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.nationality,{'attr':{'class':'form-control','placeholder':'Nationality'}}) }}
+                                <div class="color">  {{ form_errors(form.nationality) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.type,{'attr':{'class':'form-control'}}) }}
+                                <div class="color">  {{ form_errors(form.type) }}</div>
+
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.nickname,{'attr':{'class':'form-control','placeholder':'Nickname'}}) }}
+                                <div class="color">  {{ form_errors(form.nickname) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.avatar,{'attr':{'class':'form-control'}}) }}
+                                <div class="color">  {{ form_errors(form.avatar) }}</div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_widget(form.background,{'attr':{'class':'form-control'}}) }}
+                                <div class="color">{{ form_errors(form.background) }}</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit"
+                                class="form-control btn btn-primary submit px-3">{{ button_label|default('Sign In') }}</button>
+                    </div>
+                    <div class="form-group d-md-flex">
+                        <div class="w-50">
+                            <label class="checkbox-wrap checkbox-primary">Remember Me
+                                <input type="checkbox" checked>
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="w-50 text-md-right">
+                            <a href="#" style="color: #fff">Forgot Password</a>
+                        </div>
+                        <div class="w-50 text-md-right">
+                            <a href="{{ path('app_allusers_new') }}" style="color: #fff">Register</a>
+                        </div>
+                    </div>
+                    {{ form_end(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                    <!-- <p class="w-100 text-center">&mdash; Or Sign In With &mdash;</p>
+                     <div class="social d-flex text-center">
+                         <a href="#" class="px-2 py-2 mr-md-1 rounded"><span class="ion-logo-facebook mr-2"></span> Facebook</a>
+                         <a href="#" class="px-2 py-2 ml-md-1 rounded"><span class="ion-logo-twitter mr-2"></span> Twitter</a>
+                     </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/popper.js') }}"></script>
+<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/mainL.js') }}"></script>
+
+
+</body>
+</html>
+

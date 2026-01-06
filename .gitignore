@@ -1,0 +1,39 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+# Ignore dependencies and build artifacts
+/vendor/
+/node_modules/
+
+# Ignore runtime cache and logs
+/var/
+/var/*
+
+# Ignore uploaded user files
+/public/uploads/
+/public/uploads/**
+
+# Environment variables (do not commit secrets)
+/.env
+/.env.local
+/.env.*.local
+
+# OS files
+.DS_Store
